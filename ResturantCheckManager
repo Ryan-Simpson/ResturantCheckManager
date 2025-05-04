@@ -1,0 +1,136 @@
+import java.util.Scanner;
+
+public class RestaurantCheckManager {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        double totalSales = 0.0;              //Total Amount
+        double totalTips = 0.0;               //Total Tip
+        int numberOfChecks = 0;               
+
+            // Data entry loop
+            while (true) {
+                System.out.println("Enter sale amount (marked cost): ");          
+                double saleAmount = getDouble(scanner);
+        
+                System.out.println("Enter tip amount (enter -1 if blank): ");
+                double tipAmount = getDouble(scanner);
+        
+                System.out.println("Enter total amount (enter -1 if blank): ");
+                double totalAmount = getDouble(scanner);
+
+                
+                //Trying to fix user mistakes 
+                if (tipAmount == 0 && totalAmount == 0) {
+                    //Nothing entered
+                    tipAmount = 0;
+                    totalAmount = saleAmount;
+
+                } else if (tipAmount == 0 && totalAmount > 0) {
+                    //Only total entered
+                    tipAmount = totalAmount - saleAmount;
+                        if (tipAmount < 0) {
+                            tipAmount = 0;
+                            totalAmount = saleAmount;
+                        }
+
+                    } else if (tipAmount > 0 && totalAmount == 0) {
+                        //Tip entered, total left blank
+                        totalAmount = saleAmount + tipAmount;
+
+                    } else {
+                    // Both written, but double-check math
+                    double expectedTip = totalAmount - saleAmount;
+                        if (expectedTip < 0) {
+                            tipAmount = 0;
+                            totalAmount = saleAmount;
+
+                    } else {
+                    tipAmount = expectedTip; // this might overwrite the entered tip
+                }     
+            }
+
+                    totalSales += saleAmount;
+                    totalTips += tipAmount;
+                    numberOfChecks++;
+
+                    // Output summary
+                    System.out.println("Number of checks: " + numberOfChecks);
+                    System.out.printf("Total sales amount: $%.2f\n", totalSales);
+                    System.out.printf("Total tips amount: $%.2f\n", totalTips);
+        
+                    System.out.print("Do you want to stop? (Type Y to stop): ");
+                    if (scanner.next().equalsIgnoreCase("y")) break;
+
+                }
+
+        // Assume 2 servers working today
+        int workingServers = 3;
+
+        // Tip Distribution Logic
+        double serverTipShare = totalTips * 0.50;
+        double kitchenTipShare = totalTips * 0.30;
+        double hostTip = totalTips * 0.10;
+        double busserTip = totalTips * 0.10;
+
+        // Kitchen breakdown
+        double chefTip = kitchenTipShare * 0.50;
+        double sousChefTip = kitchenTipShare * 0.30;
+        double kitchenAidTip = kitchenTipShare * 0.20;
+
+        // Server share
+        double eachServerTip = serverTipShare / workingServers;
+
+        // Output the distribution
+        System.out.println("\nTip Distribution:");
+        System.out.printf("Each Server (2 working): $%.2f\n", eachServerTip);
+        System.out.printf("Chef: $%.2f\n", chefTip);
+        System.out.printf("Sous-chef: $%.2f\n", sousChefTip);
+        System.out.printf("Kitchen Aid: $%.2f\n", kitchenAidTip);
+        System.out.printf("Host/Hostess: $%.2f\n", hostTip);
+        System.out.printf("Busser: $%.2f\n", busserTip);
+
+    /* 
+        // Example test case output
+        System.out.println("\n--- Test Cases ---");
+        runTestCase(100); // Shows 40 for each server
+        runTestCase(150); // Shows show 7.5 for chef
+        runTestCase(10);  // Shows show 0.5 for busser
+    */
+    }
+    
+    // Helper to get double inputs proplery
+    private static double getDouble(Scanner scanner) {
+        while (true) {
+            String input = scanner.next();
+            try {
+                return Double.parseDouble(input); // Try parsing as double directly
+            } catch (NumberFormatException e1) {
+                try {
+                    int intValue = Integer.parseInt(input); // Try parsing as int
+                    return (double) intValue; // Convert int to double
+                } catch (NumberFormatException e2) {
+                    System.out.println("Invalid input. Enter a number (e.g., 3 or 3.0):");
+                }
+            }
+        }
+    }
+
+    
+    // Function to run test case
+    /*
+    private static void runTestCase(double tipAmount) {
+        double serverTipShare = tipAmount * 0.80;
+        double kitchenTipShare = tipAmount * 0.10;
+        double hostTip = tipAmount * 0.05;
+        double busserTip = tipAmount * 0.05;
+
+        double chefTip = kitchenTipShare * 0.50;
+
+        System.out.printf("\nFor a total tip of $%.2f:\n", tipAmount);
+        System.out.printf("Each Server: $%.2f\n", serverTipShare / 2);
+        System.out.printf("Chef: $%.2f\n", chefTip);
+        System.out.printf("Busser: $%.2f\n", busserTip);
+    }    
+    */
+}
